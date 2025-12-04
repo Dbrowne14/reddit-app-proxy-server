@@ -1,0 +1,23 @@
+{
+  "name": "reddit-app-proxy-server",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/Dbrowne14/reddit-app-proxy-server#readme",
+  "bugs": {
+    "url": "https://github.com/Dbrowne14/reddit-app-proxy-server/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dbrowne14/reddit-app-proxy-server.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
