@@ -16,16 +16,19 @@ const preLoadedSubReddits = [
 const findMedia = (post) => {
   const data = post.data;
 
-  const crosspostRoot =
-    data.crosspost_parent_list?.[0]?.secure_media;
+  const crosspostRoot = data.crosspost_parent_list?.[0]?.secure_media;
+  
   //rejection conditions
   const isGallery = crosspostRoot?.gallery_data || data.gallery_data;
-  const isRemoved = data.removed_by_category !== null || crosspostRoot?.removed_by_category
-
-  if (isGallery || isRemoved) {
+  const isRemoved =
+    data.removed_by_category !== null ||
+    crosspostRoot?.removed_by_category ||
+    data.crosspost_parent_list?.[0]?.removed_by_category;
+  //const isUnpopular = data.upvote_ratio < 0.7;
+  
+  if (isGallery || isRemoved || isUnpopular) {
     return null;
   }
-
 
   // is a crosspost
   if (crosspostRoot?.reddit_video.fallback_url) {
