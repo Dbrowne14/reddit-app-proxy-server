@@ -19,7 +19,7 @@ const findMedia = (post) => {
   const crosspostRoot =
     data.crosspost_parent_list?.[0]?.secure_media;
   //rejection conditions
-  const isGallery = crosspostRoot.gallery_data || data.gallery_data;
+  const isGallery = crosspostRoot?.gallery_data || data.gallery_data;
   const isRemoved = data.removed_by_category !== null;
 
   if (isGallery || isRemoved) {
