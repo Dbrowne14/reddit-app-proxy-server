@@ -26,7 +26,7 @@ const findMedia = (post) => {
     data.crosspost_parent_list?.[0]?.removed_by_category;
   //const isUnpopular = data.upvote_ratio < 0.7;
   
-  if (isGallery || isRemoved || isUnpopular) {
+  if (isGallery || isRemoved) {
     return null;
   }
 
