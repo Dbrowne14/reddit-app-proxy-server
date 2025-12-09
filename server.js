@@ -41,7 +41,7 @@ const findMedia = (post) => {
   if (videoRoot?.fallback_url) {
     return {
       type: "video",
-      url: videoRoot?.reddit_video?.fallback_url,
+      url: videoRoot?.fallback_url,
       height: videoRoot?.height,
       width: videoRoot?.width,
     };
