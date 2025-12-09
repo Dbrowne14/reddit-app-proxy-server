@@ -3,7 +3,7 @@ import cors from "cors";
 
 const app = express();
 app.use(cors());
-const PORT = process.env.PORT || 4000
+const PORT = process.env.PORT || 4000;
 
 // decide on the subreddits
 const preLoadedSubReddits = [
@@ -16,14 +16,19 @@ const preLoadedSubReddits = [
 const findMedia = (post) => {
   const data = post.data;
 
-  //if gallery
-  if (data.gallery_data) {
+  const crosspostRoot =
+    data.crosspost_parent_list?.[0]?.secure_media;
+  //rejection conditions
+  const isGallery = crosspostRoot.gallery_data || data.gallery_data;
+  const isRemoved = data.removed_by_category !== null;
+
+  if (isGallery || isRemoved) {
     return null;
   }
 
+
   // is a crosspost
-  const crosspostRoot = data.crosspost_parent_list?.[0]?.secure_media.reddit_video;
-  if (crosspostRoot?.fallback_url) {
+  if (crosspostRoot?.reddit_video.fallback_url) {
     return {
       type: "video",
       url: crosspostRoot?.fallback_url,
