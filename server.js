@@ -20,7 +20,7 @@ const findMedia = (post) => {
     data.crosspost_parent_list?.[0]?.secure_media;
   //rejection conditions
   const isGallery = crosspostRoot?.gallery_data || data.gallery_data;
-  const isRemoved = data.removed_by_category !== null;
+  const isRemoved = data.removed_by_category !== null || crosspostRoot?.removed_by_category
 
   if (isGallery || isRemoved) {
     return null;
@@ -31,7 +31,7 @@ const findMedia = (post) => {
   if (crosspostRoot?.reddit_video.fallback_url) {
     return {
       type: "video",
-      url: crosspostRoot?.fallback_url,
+      url: crosspostRoot?.reddit_video?.fallback_url,
       width: crosspostRoot?.width,
       height: crosspostRoot?.height,
     };
@@ -41,7 +41,7 @@ const findMedia = (post) => {
   if (videoRoot?.fallback_url) {
     return {
       type: "video",
-      url: videoRoot?.fallback_url,
+      url: videoRoot?.reddit_video?.fallback_url,
       height: videoRoot?.height,
       width: videoRoot?.width,
     };
