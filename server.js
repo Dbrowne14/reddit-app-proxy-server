@@ -3,12 +3,13 @@ import cors from "cors";
 
 const app = express();
 app.use(cors());
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 4000
 
+// decide on the subreddits
 const preLoadedSubReddits = [
   "educationalgifs",
-  "dataisbeautiful",
-  "coolguides",
+  "perfectloops",
+  "Cinemagraphs",
   "mechanical_gifs",
 ];
 
@@ -55,8 +56,7 @@ const findMedia = (post) => {
 };
 
 // write some backend code
-// decide on the subreddits
-// reddit routes -> GET https://www.reddit.com/r/{subreddit}/.json
+
 const subCheck = (req, res, next) => {
   const { subreddit } = req.params;
   if (!preLoadedSubReddits.includes(subreddit)) {
@@ -70,7 +70,7 @@ app.get("/r/:subreddit", subCheck, async (req, res) => {
   const { subreddit } = req.params;
   try {
     const subRes = await fetch(
-      `https://www.reddit.com/r/${subreddit}/.json?limit=100`
+      `https://www.reddit.com/r/${subreddit}/.json?limit=20`
     );
     const subJson = await subRes.json();
 
