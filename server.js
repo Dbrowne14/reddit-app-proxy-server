@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import { findMedia, findImg } from "./serverFns";
+import { findMedia, findImg } from "./serverFns.js";
 
 const app = express();
 app.use(cors());
