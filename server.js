@@ -48,7 +48,7 @@ app.get("/r/:subreddit", subCheck, async (req, res) => {
   }
 });
 
-app.get("r/:subreddit/about", subCheck, async (req, res) => {
+app.get("/r/:subreddit/about", subCheck, async (req, res) => {
     const {subreddit} = req.params;
     try {
         const subRes = await fetch(`https://www.reddit.com/r/${subreddit}/about/.json`
