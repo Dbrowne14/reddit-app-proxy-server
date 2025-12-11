@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import { findMedia, findImg } from "./serverFns";
 
 const app = express();
 app.use(cors());
@@ -11,63 +12,9 @@ const preLoadedSubReddits = [
   "perfectloops",
   "Cinemagraphs",
   "mechanical_gifs",
-  //add "gifs"
+  //"gifsthatkeepongiving"
 ];
 
-const findMedia = (post) => {
-  const data = post.data;
-
-  const crosspostRoot = data.crosspost_parent_list?.[0]?.secure_media;
-
-  //rejection conditions
-  const isGallery =
-    data.crosspost_parent_list?.[0]?.gallery_data ||
-    crosspostRoot?.gallery_data ||
-    data.gallery_data;
-  const isRemoved =
-    data.removed_by_category !== null ||
-    crosspostRoot?.removed_by_category ||
-    data.crosspost_parent_list?.[0]?.removed_by_category;
-  const isUnpopular = data.upvote_ratio < 0.7;
-
-  if (isGallery || isRemoved || isUnpopular) {
-    return null;
-  }
-
-  // is a crosspost
-  if (crosspostRoot?.reddit_video.fallback_url) {
-    return {
-      type: "video",
-      url: crosspostRoot?.reddit_video?.fallback_url,
-      width: crosspostRoot?.width,
-      height: crosspostRoot?.height,
-    };
-  }
-  // is a video
-  const videoRoot = data.secure_media?.reddit_video;
-  if (videoRoot?.fallback_url) {
-    return {
-      type: "video",
-      url: videoRoot?.fallback_url,
-      height: videoRoot?.height,
-      width: videoRoot?.width,
-    };
-  }
-  // is a gif with acceptable format
-  if (data.url_overridden_by_dest) {
-    return {
-      type: "gif",
-      url: data.url_overridden_by_dest,
-      width: data.preview?.images?.[0]?.source?.width,
-      height: data.preview?.images?.[0]?.source?.height,
-    };
-  }
-
-  // or return null
-  return null;
-};
-
-// write some backend code
 
 const subCheck = (req, res, next) => {
   const { subreddit } = req.params;
@@ -77,7 +24,7 @@ const subCheck = (req, res, next) => {
   next();
 };
 
-//get the whole subreddit
+//get the whole subreddit data file
 app.get("/r/:subreddit", subCheck, async (req, res) => {
   const { subreddit } = req.params;
   try {
@@ -100,5 +47,22 @@ app.get("/r/:subreddit", subCheck, async (req, res) => {
     res.status(500).send(error.message);
   }
 });
+
+app.get("r/:subreddit/about", subCheck, async (req, res) => {
+    const {subreddit} = req.params;
+    try {
+        const subRes = await fetch(`https://www.reddit.com/r/${subreddit}/about/.json`
+        );
+        const subAboutJson = await subRes.json();
+
+        res.json({
+            subCount: subAboutJson.data.subscribers,
+            image: findImg(subAboutJson)
+        })
+
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+})
 
 app.listen(PORT, () => console.log(`Proxy server running on port ${PORT}`));
