@@ -4,7 +4,7 @@ import { findMedia, findImg } from "./serverFns.js";
 
 const app = express();
 app.use(cors());
-const PORT = process.env.PORT || 4000;
+const PORT = /*process.env.PORT ||*/ 4000;
 
 // decide on the subreddits
 const preLoadedSubReddits = [
@@ -12,9 +12,8 @@ const preLoadedSubReddits = [
   "perfectloops",
   "Cinemagraphs",
   "mechanical_gifs",
-  //"gifsthatkeepongiving"
+  "gifsthatkeepongiving",
 ];
-
 
 const subCheck = (req, res, next) => {
   const { subreddit } = req.params;
@@ -49,20 +48,21 @@ app.get("/r/:subreddit", subCheck, async (req, res) => {
 });
 
 app.get("/r/:subreddit/about", subCheck, async (req, res) => {
-    const {subreddit} = req.params;
-    try {
-        const subRes = await fetch(`https://www.reddit.com/r/${subreddit}/about/.json`
-        );
-        const subAboutJson = await subRes.json();
+  const { subreddit } = req.params;
+  try {
+    const subRes = await fetch(
+      `https://www.reddit.com/r/${subreddit}/about/.json`
+    );
+    const subAboutJson = await subRes.json();
 
-        res.json({
-            subCount: subAboutJson.data.subscribers,
-            image: findImg(subAboutJson)
-        })
-
-    } catch (error) {
-        res.status(500).send(error.message);
-    }
-})
+    res.json({
+      subreddit,
+      subCount: subAboutJson.data.subscribers,
+      image: findImg(subAboutJson),
+    });
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
 
 app.listen(PORT, () => console.log(`Proxy server running on port ${PORT}`));
