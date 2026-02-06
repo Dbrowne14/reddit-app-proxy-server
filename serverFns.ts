@@ -1,4 +1,4 @@
-import type { MediaObject } from "./types";
+import type { MediaObject } from "./types.js";
 
 export type Sub = {
   data: {
