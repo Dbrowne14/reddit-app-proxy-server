@@ -1,6 +1,14 @@
+import type { MediaObject } from "./types";
+
+export type Sub = {
+  data: {
+    icon_img?: string;
+    community_icon?: string;
+  }
+}
 // to find correct sub params
 
-export const findImg = (sub) => {
+export const findImg = (sub:Sub) => {
     const data = sub.data;
     if(data.icon_img) {
         return data.icon_img;
@@ -13,7 +21,7 @@ export const findImg = (sub) => {
 }   
 
 //to find correct Media params
-export const findMedia = (post) => {
+export const findMedia = (post: {data:any}): MediaObject | null  => {
   const data = post.data;
 
   const crosspostRoot = data.crosspost_parent_list?.[0]?.secure_media;
