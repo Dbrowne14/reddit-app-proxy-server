@@ -1,10 +1,12 @@
-import express from "express";
+import express from "express"
+import { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import { findMedia, findImg } from "./serverFns.js";
+import type { SubRedditParams, RedditChild } from "./types.js";
 
 const app = express();
 app.use(cors());
-const PORT = /*process.env.PORT ||*/ 4000;
+const PORT = process.env.PORT
 
 // decide on the subreddits
 const preLoadedSubReddits = [
@@ -15,7 +17,7 @@ const preLoadedSubReddits = [
   "gifsthatkeepongiving",
 ];
 
-const subCheck = (req, res, next) => {
+const subCheck = (req: Request<SubRedditParams>, res: Response, next: NextFunction) => {
   const { subreddit } = req.params;
   if (!preLoadedSubReddits.includes(subreddit)) {
     return res.status(404).send(`Subreddit ${subreddit} does not exist`);
@@ -24,7 +26,7 @@ const subCheck = (req, res, next) => {
 };
 
 //get the whole subreddit data file
-app.get("/r/:subreddit", subCheck, async (req, res) => {
+app.get("/r/:subreddit", subCheck, async (req: Request<SubRedditParams>, res: Response) => {
   const { subreddit } = req.params;
   try {
     const subRes = await fetch(
@@ -32,7 +34,7 @@ app.get("/r/:subreddit", subCheck, async (req, res) => {
     );
     const subJson = await subRes.json();
 
-    const posts = subJson.data.children.map((post) => ({
+    const posts = subJson.data.children.map((post: RedditChild) => ({
       title: post.data.title,
       media: findMedia(post),
       upvote_ratio: post.data.upvote_ratio,
@@ -43,11 +45,15 @@ app.get("/r/:subreddit", subCheck, async (req, res) => {
       posts,
     });
   } catch (error) {
+    if (error instanceof Error) {
     res.status(500).send(error.message);
+  } else {
+    res.status(500).send(String(error))
+  }
   }
 });
 
-app.get("/r/:subreddit/about", subCheck, async (req, res) => {
+app.get("/r/:subreddit/about", subCheck, async (req: Request<SubRedditParams>, res: Response) => {
   const { subreddit } = req.params;
   try {
     const subRes = await fetch(
@@ -61,8 +67,11 @@ app.get("/r/:subreddit/about", subCheck, async (req, res) => {
       image: findImg(subAboutJson),
     });
   } catch (error) {
+        if (error instanceof Error) {
     res.status(500).send(error.message);
+  } else {
+    res.status(500).send(String(error))
   }
-});
+}});
 
 app.listen(PORT, () => console.log(`Proxy server running on port ${PORT}`));
