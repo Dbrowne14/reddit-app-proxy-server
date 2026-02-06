@@ -13,12 +13,12 @@
   "license": "ISC",
   "author": "",
   "type": "module",
-  "main": "server.ts",
+  "main": "dist/server.js",
 "scripts": {
   "build": "tsc",
   "start": "node dist/server.js",
-  "dev": "ts-node server.ts"
-  },
+  "dev": "ts-node --esm server.ts"
+},
   "dependencies": {
     "cors": "^2.8.5",
     "eslint": "^9.39.1",
