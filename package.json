@@ -17,7 +17,7 @@
 "scripts": {
   "build": "tsc",
   "start": "node dist/server.js",
-  "dev": "ts-node src/server.ts"
+  "dev": "ts-node server.ts"
   },
   "dependencies": {
     "cors": "^2.8.5",

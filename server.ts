@@ -1,5 +1,5 @@
 import express from "express"
-import type{ Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import { findMedia, findImg } from "./serverFns.js";
 import type { SubRedditParams, RedditChild } from "./types.js";
