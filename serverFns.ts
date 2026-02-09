@@ -4,24 +4,24 @@ export type Sub = {
   data: {
     icon_img?: string;
     community_icon?: string;
-  }
-}
-// to find correct sub params
+  };
+};
+// to find correct sub params this works for Images too
 
-export const findImg = (sub:Sub) => {
-    const data = sub.data;
-    if(data.icon_img) {
-        return data.icon_img;
-    }
-    if (data.community_icon) {
-        const rawUrl = data.community_icon;
-        return rawUrl.replace(/&amp;/g, "&");
-    }
-    return null
-}   
+export const findImg = (sub: Sub) => {
+  const data = sub.data;
+  if (data.icon_img) {
+    return data.icon_img;
+  }
+  if (data.community_icon) {
+    const rawUrl = data.community_icon;
+    return rawUrl.replace(/&amp;/g, "&");
+  }
+  return null;
+};
 
 //to find correct Media params
-export const findMedia = (post: {data:any}): MediaObject | null  => {
+export const findMedia = (post: { data: any }): MediaObject | null => {
   const data = post.data;
 
   const crosspostRoot = data.crosspost_parent_list?.[0]?.secure_media;
@@ -65,6 +65,16 @@ export const findMedia = (post: {data:any}): MediaObject | null  => {
     return {
       type: "gif",
       url: data.url_overridden_by_dest,
+      width: data.preview?.images?.[0]?.source?.width,
+      height: data.preview?.images?.[0]?.source?.height,
+    };
+  }
+
+  //is an image
+  if (data.url) {
+    return {
+      type: "image",
+      url: data.url,
       width: data.preview?.images?.[0]?.source?.width,
       height: data.preview?.images?.[0]?.source?.height,
     };
