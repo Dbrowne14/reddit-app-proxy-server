@@ -10,7 +10,7 @@ const PORT = process.env.PORT
 
 // decide on the subreddits
 const preLoadedSubReddits = [
-  "educationalgifs",
+  "EarthPorn",
   "perfectloops",
   "Cinemagraphs",
   "mechanical_gifs",
