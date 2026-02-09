@@ -6,25 +6,27 @@ import type { SubRedditParams, RedditChild } from "./types.js";
 
 const app = express();
 app.use(cors());
-const PORT = process.env.PORT
+const PORT = process.env.PORT || 3000
 
 // decide on the subreddits
 const preLoadedSubReddits = [
-  "PixelArt",
+  "pixelart",
   "perfectloops",
-  "Cinemagraphs",
+  "cinemagraphs",
   "mechanical_gifs",
   "gifsthatkeepongiving",
 ];
 
 const subCheck = (req: Request<SubRedditParams>, res: Response, next: NextFunction) => {
-  const { subreddit } = req.params;
+  const subreddit = req.params.subreddit.toLowerCase();
+
   if (!preLoadedSubReddits.includes(subreddit)) {
-    return res.status(404).send(`Subreddit ${subreddit} does not exist`);
+    return res.status(404).send(`Subreddit ${req.params.subreddit} does not exist`);
   }
+
+  req.params.subreddit = subreddit; // optional but keeps things consistent
   next();
 };
-
 //get the whole subreddit data file
 app.get("/r/:subreddit", subCheck, async (req: Request<SubRedditParams>, res: Response) => {
   const { subreddit } = req.params;
