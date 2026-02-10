@@ -14,11 +14,11 @@
   "author": "",
   "type": "module",
   "main": "dist/server.js",
-"scripts": {
-  "build": "tsc",
-  "start": "node dist/server.js",
-  "dev": "ts-node --esm server.ts"
-},
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "tsx watch server.ts"
+  },
   "dependencies": {
     "cors": "^2.8.5",
     "eslint": "^9.39.1",
@@ -26,6 +26,7 @@
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.6"
+    "@types/express": "^5.0.6",
+    "tsx": "^4.21.0"
   }
 }
