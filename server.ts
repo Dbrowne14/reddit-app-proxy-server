@@ -6,7 +6,7 @@ import type { SubRedditParams, RedditChild } from "./types.js";
 
 const app = express();
 app.use(cors());
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT 
 
 // decide on the subreddits others to consider are perfectloops and cinemagraphs
 const preLoadedSubReddits = [
