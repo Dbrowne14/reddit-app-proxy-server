@@ -6,7 +6,7 @@ import type { SubRedditParams, RedditChild } from "./types.js";
 
 const app = express();
 app.use(cors());
-const PORT = process.env.PORT 
+const PORT =  Number(process.env.PORT) || 5000;
 
 // decide on the subreddits others to consider are perfectloops and cinemagraphs
 const preLoadedSubReddits = [
@@ -27,8 +27,6 @@ const subCheck = (req: Request<SubRedditParams>, res: Response, next: NextFuncti
   req.params.subreddit = subreddit; // optional but keeps things consistent
   next();
 };
-
-app.get("/", (req, res) => res.send("RedGallery API is running!"));
 
 //get the whole subreddit data file
 app.get("/r/:subreddit", subCheck, async (req: Request<SubRedditParams>, res: Response) => {

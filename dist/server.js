@@ -3,27 +3,29 @@ import cors from "cors";
 import { findMedia, findImg } from "./serverFns.js";
 const app = express();
 app.use(cors());
-const PORT = process.env.PORT;
-// decide on the subreddits
+const PORT = Number(process.env.PORT) || 5000;
+// decide on the subreddits others to consider are perfectloops and cinemagraphs
 const preLoadedSubReddits = [
-    "educationalgifs",
-    "perfectloops",
-    "Cinemagraphs",
-    "mechanical_gifs",
-    "gifsthatkeepongiving",
+    "pixelart",
+    "imaginarylandscapes",
+    "imaginaryarchitecture",
+    "earthporn",
+    "cityporn",
 ];
 const subCheck = (req, res, next) => {
-    const { subreddit } = req.params;
+    const subreddit = req.params.subreddit.toLowerCase();
     if (!preLoadedSubReddits.includes(subreddit)) {
-        return res.status(404).send(`Subreddit ${subreddit} does not exist`);
+        return res.status(404).send(`Subreddit ${req.params.subreddit} does not exist`);
     }
+    req.params.subreddit = subreddit; // optional but keeps things consistent
     next();
 };
+app.get("/", (req, res) => res.send("RedGallery API is running!"));
 //get the whole subreddit data file
 app.get("/r/:subreddit", subCheck, async (req, res) => {
     const { subreddit } = req.params;
     try {
-        const subRes = await fetch(`https://www.reddit.com/r/${subreddit}/.json?limit=20`);
+        const subRes = await fetch(`https://www.reddit.com/r/${subreddit}/.json?limit=30`);
         const subJson = await subRes.json();
         const posts = subJson.data.children.map((post) => ({
             title: post.data.title,
