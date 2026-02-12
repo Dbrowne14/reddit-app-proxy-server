@@ -27,6 +27,9 @@ const subCheck = (req: Request<SubRedditParams>, res: Response, next: NextFuncti
   req.params.subreddit = subreddit; // optional but keeps things consistent
   next();
 };
+
+app.get("/", (req, res) => res.send("RedGallery API is running!"));
+
 //get the whole subreddit data file
 app.get("/r/:subreddit", subCheck, async (req: Request<SubRedditParams>, res: Response) => {
   const { subreddit } = req.params;
