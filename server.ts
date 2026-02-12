@@ -8,13 +8,13 @@ const app = express();
 app.use(cors());
 const PORT = process.env.PORT || 3000
 
-// decide on the subreddits
+// decide on the subreddits others to consider are perfectloops and cinemagraphs
 const preLoadedSubReddits = [
   "pixelart",
-  "perfectloops",
-  "cinemagraphs",
-  "mechanical_gifs",
-  "gifsthatkeepongiving",
+  "imaginarylandscapes",
+  "imaginaryarchitecture",
+  "earthporn",
+  "cityporn",
 ];
 
 const subCheck = (req: Request<SubRedditParams>, res: Response, next: NextFunction) => {
@@ -32,7 +32,7 @@ app.get("/r/:subreddit", subCheck, async (req: Request<SubRedditParams>, res: Re
   const { subreddit } = req.params;
   try {
     const subRes = await fetch(
-      `https://www.reddit.com/r/${subreddit}/.json?limit=20`
+      `https://www.reddit.com/r/${subreddit}/.json?limit=30`
     );
     const subJson = await subRes.json();
 

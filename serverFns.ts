@@ -25,7 +25,7 @@ export const findMedia = (post: { data: any }): MediaObject | null => {
   const data = post.data;
 
   const crosspostRoot = data.crosspost_parent_list?.[0]?.secure_media;
-
+  const isAd = data.post_hint === "self"
   //rejection conditions
   const isGallery =
     data.crosspost_parent_list?.[0]?.gallery_data ||
@@ -36,30 +36,13 @@ export const findMedia = (post: { data: any }): MediaObject | null => {
     crosspostRoot?.removed_by_category ||
     data.crosspost_parent_list?.[0]?.removed_by_category;
   const isUnpopular = data.upvote_ratio < 0.7;
+  const isStickied = data.stickied === true
+  const isVideo = data.secure_media?.reddit_video
 
-  if (isGallery || isRemoved || isUnpopular) {
+  if (isGallery || isRemoved || isUnpopular || isAd || isStickied || isVideo) {
     return null;
   }
 
-  // is a crosspost
-  if (crosspostRoot?.reddit_video.fallback_url) {
-    return {
-      type: "video",
-      url: crosspostRoot?.reddit_video?.fallback_url,
-      width: crosspostRoot?.width,
-      height: crosspostRoot?.height,
-    };
-  }
-  // is a video
-  const videoRoot = data.secure_media?.reddit_video;
-  if (videoRoot?.fallback_url) {
-    return {
-      type: "video",
-      url: videoRoot?.fallback_url,
-      height: videoRoot?.height,
-      width: videoRoot?.width,
-    };
-  }
   // is a gif with acceptable format
   if (data.url_overridden_by_dest) {
     return {
