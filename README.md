@@ -26,4 +26,5 @@ The proxy server exists to:
 
 ---
 
-## 🔗 ![Architecture Diagram](./docs/architecture.png)
+## 🔗 Architecture Used
+[Architecture Diagram](./docs/architecture.png)
