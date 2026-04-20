@@ -3,11 +3,17 @@ import type { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import { findMedia, findImg } from "./serverFns.js";
 import type { SubRedditParams, RedditChild } from "./types.js";
+import { Pool } from "pg";
+
+const pool = new Pool({
+  host: "localhost",
+  port: 5432,
+  database: "subRedditApi",
+  user: "postgres",
+});
 
 const app = express();
-app.use(
-  cors(),
-);
+app.use(cors());
 const PORT = Number(process.env.PORT) || 3000;
 
 // decide on the subreddits others to consider are perfectloops and cinemagraphs
@@ -93,5 +99,82 @@ app.get(
     }
   },
 );
+
+// maunal update of database posts
+app.post("/subreddit", async (_, res) => {
+  try {
+    const results = [];
+    for (const sub of preLoadedSubReddits) {
+      const subRes = await fetch(`https://www.reddit.com/r/${sub}/about/.json`);
+      const subAboutJson = await subRes.json();
+      const { name, display_name_prefixed, subscribers } = subAboutJson.data;
+      const img = findImg(subAboutJson);
+
+      const dbres = await pool.query(
+        `
+        INSERT INTO subreddit (id, subname, subcount, image)
+        VALUES($1, $2, $3, $4)
+        ON CONFLICT(id) DO UPDATE SET
+        subname = EXCLUDED.subname,
+        subcount = EXCLUDED.subcount,
+        image = EXCLUDED.image
+        RETURNING *;
+        `,
+        [name, display_name_prefixed, subscribers, img],
+      );
+      results.push(dbres.rows[0]);
+    }
+    res.status(200).json({ message: "complete", data: results });
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+});
+
+app.post("/posts", async (_, res) => {
+  try {
+    const results = [];
+    for (const sub of preLoadedSubReddits) {
+      const subRes = await fetch(
+        `https://www.reddit.com/r/${sub}/.json?limit=30`,
+      );
+      const subJson = await subRes.json();
+
+      for (const post of subJson.data.children) {
+        const { name, title, upvote_ratio, subreddit_name_prefixed } =
+          post.data;
+        const media = findMedia(post);
+        if (media) {
+          const dbres = await pool.query(
+            `INSERT INTO posts (id, subreddit_name, post_title, upvote_ratio, media_type, media_url, media_width, media_height)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            ON CONFLICT (id) DO UPDATE SET
+            media_url = EXCLUDED.media_url,
+            media_type = EXCLUDED.media_type,         
+            upvote_ratio = EXCLUDED.upvote_ratio
+            RETURNING *;`,
+            [
+              name,
+              subreddit_name_prefixed,
+              title,
+              upvote_ratio,
+              media.type,
+              media.url,
+              media.width,
+              media.height,
+            ],
+          );
+          results.push(dbres.rows[0]);
+        }
+      }
+    }
+    res.status(200).json({ message: "complete", data: results });
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
+});
+
+app.get("/", (req, res) => {
+  res.json({ hello: "Hello" });
+});
 
 app.listen(PORT, () => console.log(`Proxy server running on port ${PORT}`));

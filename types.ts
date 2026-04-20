@@ -10,9 +10,11 @@ export type MediaObject = {
 };
 
 export type RedditPostChild = {
+    name: string;
     title: string;
     media: () => MediaObject | null;
     upvote_ratio: number;
+    subreddit_name_prefixed: string;
 }
 
 export type RedditChild = {
