@@ -4,12 +4,11 @@ import cors from "cors";
 import { findMedia, findImg } from "./serverFns.js";
 import type { SubRedditParams, RedditChild } from "./types.js";
 import { Pool } from "pg";
+import dotenv from "dotenv";
+dotenv.config();
 
 const pool = new Pool({
-  host: "localhost",
-  port: 5432,
-  database: "subRedditApi",
-  user: "postgres",
+  connectionString: process.env.DATABASE_URL,
 });
 
 const app = express();
@@ -181,7 +180,7 @@ app.get("/subreddit/:subreddit", async (req,res)=> {
   const name = `r/${req.params.subreddit}`;
   if(!name) return res.status(400).json({error: "Missing subreddit name"})
   try {
-   const response= await pool.query(
+console.log("QUERY NAME:", name);   const response= await pool.query(
       `SELECT subname, subcount, image FROM subreddit
       WHERE subname = $1`,[name]
     )
@@ -190,10 +189,12 @@ app.get("/subreddit/:subreddit", async (req,res)=> {
 
     res.status(200).json({data})
   } catch(err) {
+
     res.status(500).json({error: err})
   }
 
 })
+
 
 app.get("/posts/:subreddit", async (req,res)=> {
   const name = `r/${req.params.subreddit}`;
@@ -214,3 +215,4 @@ app.get("/posts/:subreddit", async (req,res)=> {
 })
 
 app.listen(PORT, () => console.log(`Proxy server running on port ${PORT}`));
+console.log(process.env.DATABASE_URL);
