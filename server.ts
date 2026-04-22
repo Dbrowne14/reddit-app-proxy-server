@@ -177,4 +177,22 @@ app.get("/", (req, res) => {
   res.json({ hello: "Hello" });
 });
 
+app.get("/subreddit/:subreddit", async (req,res)=> {
+  const name = `r/${req.params.subreddit}`;
+  if(!name) return res.status(400).json({error: "Missing subreddit name"})
+  try {
+   const response= await pool.query(
+      `SELECT subname, subcount, image FROM subreddit
+      WHERE subname = $1`,[name]
+    )
+    const data = response.rows[0];
+    if(!data) return res.status(404).json({error: "Subreddit not found!"})
+
+    res.status(200).json({data})
+  } catch(err) {
+    res.status(500).json({error: err})
+  }
+
+})
+
 app.listen(PORT, () => console.log(`Proxy server running on port ${PORT}`));
